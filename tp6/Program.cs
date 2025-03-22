@@ -53,10 +53,8 @@
 
         public SayaTubeVideo(string title)
         {
-            if (title == null || title.Length > 100)
-            {
+            if (title == "" || title.Length > 100)
                 throw new Exception("Judul video tidak valid");
-            }
 
             this.id = random.Next(00000, 99999);
             this.title = title;
