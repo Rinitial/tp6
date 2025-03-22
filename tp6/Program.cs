@@ -2,16 +2,43 @@
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine("Masukkan Judul : ");
+        Console.Write("Masukkan judul video: ");
         string judulBaru = Console.ReadLine();
 
-        SayaTubeVideo video = new SayaTubeVideo(judulBaru);
+        SayaTubeVideo video;
+        try
+        {
+            video = new SayaTubeVideo(judulBaru);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return;
+        }
 
         video.printVideoDetails();
 
-        Console.WriteLine("Masukkan jumlah penambahan playcount : ");
-        int play = int.Parse(Console.ReadLine());
-        video.IncreasePlayCount(play);
+        bool isValidInput;
+        int play;
+        do
+        {
+            Console.Write("Masukkan jumlah penambahan playcount (maksimal 10.000.000): ");
+            isValidInput = int.TryParse(Console.ReadLine(), out play) && play <= 10000000;
+
+            if (!isValidInput)
+            {
+                Console.WriteLine("Input jumlah penambahan playcount tidak valid!");
+            }
+        } while (!isValidInput);
+
+        try
+        {
+            video.IncreasePlayCount(play);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
 
         video.printVideoDetails();
     }
@@ -26,6 +53,11 @@
 
         public SayaTubeVideo(string title)
         {
+            if (title == null || title.Length > 100)
+            {
+                throw new Exception("Judul video tidak valid");
+            }
+
             this.id = random.Next(00000, 99999);
             this.title = title;
             this.playCount = 0;
@@ -33,7 +65,19 @@
 
         public void IncreasePlayCount(int play)
         {
-            playCount += play;
+            if (play > 10000000)
+                throw new Exception("Playcount melebihi batas");
+            try
+            {
+                checked
+                {
+                    playCount += play;
+                }
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine("Playcount melebihi batas tertinggi integer");
+            }
         }
 
         public void printVideoDetails()
